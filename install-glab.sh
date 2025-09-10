@@ -116,7 +116,6 @@ install_dependencies() {
 
 # Obtenir la dernière version depuis l'API GitLab
 get_latest_version() {
-    print_info "Récupération de la dernière version..."
     local api_url="https://gitlab.com/api/v4/projects/gitlab-org%2Fcli/releases"
     
     # Utiliser curl avec jq pour une analyse JSON plus robuste
@@ -272,6 +271,7 @@ main() {
 
     # Déterminer la version à installer
     if [ $# -eq 0 ]; then
+        print_info "Récupération de la dernière version..."
         target_version=$(get_latest_version)
         print_info "Dernière version disponible: v${target_version}"
     else
