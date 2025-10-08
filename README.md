@@ -2,14 +2,14 @@
 
 This repository contains an automated installation script for GitLab CLI (glab) with dependency management and post-installation verification.
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Installation](#-installation)
-- [Usage](#-usage)
-- [Updates](#-updates)
-- [Troubleshooting](#-troubleshooting)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Updates](#updates)
+- [Troubleshooting](#troubleshooting)
 
-## 🚀 Installation
+## Installation
 
 ### Automated Installation with Script
 
@@ -26,32 +26,28 @@ chmod +x install-glab.sh
 
 ### Script Features
 
-- ✅ **Auto-detection** of the latest available version
-- ✅ **Version checking** of currently installed version
-- ✅ **Automatic installation** of missing dependencies
-- ✅ **Clean installation** with automatic cleanup of temporary files
-- ✅ **Robust JSON parsing** with jq for GitLab API
-- ✅ **Post-installation verification** of proper functionality
-- ✅ **Robust error handling** with colored messages
-- ✅ **Multi-tool support** (wget/curl for downloads)
+- **Auto-detection** of the latest available version
+- **Version checking** of currently installed version
+- **Automatic installation** of missing dependencies
+- **Clean installation** with automatic cleanup of temporary files
+- **Robust JSON parsing** with jq for GitLab API
+- **Post-installation verification** of proper functionality
+- **Robust error handling** with colored messages
 
 ### Prerequisites
 
 The script automatically manages the installation of the following dependencies:
 
-#### Core Dependencies
+#### Required Dependencies
 
-- `wget` or `curl` - For downloading packages
+- `wget` - For downloading packages
 - `dpkg` - For installing .deb packages
 - `jq` - For parsing JSON responses from GitLab API
-
-#### Dependencies for Optimal glab Functionality
-
 - `git` - Required for all Git functionality in glab
 - `ssh` - For SSH authentication with GitLab
 - `gpg` - For signature verification (recommended for security)
 
-> 💡 **Note:** If any dependencies are missing, the script will automatically install them via `apt-get`. Administrator privileges required.
+> **Note:** If any dependencies are missing, the script will automatically install them via `apt-get`. Administrator privileges required.
 
 ### First Use
 
@@ -67,29 +63,15 @@ glab auth login --hostname gitlab.example.com
 
 The script automatically verifies that glab works correctly after installation.
 
-## � Usage
+## Usage
 
 For detailed usage instructions and command reference, please refer to the [official glab documentation](https://gitlab.com/gitlab-org/cli).
 
-## 🔄 Updates
-
-### Automatic Update
+## Updates
 
 ```bash
 # Update to the latest version
 ./install-glab.sh
-
-# The script automatically checks:
-# - Currently installed version
-# - Missing dependencies
-# - Proper functionality after update
-```
-
-### Manual Update
-
-```bash
-# Check current version
-glab version
 
 # Install a specific version
 ./install-glab.sh 1.62.0
@@ -98,7 +80,25 @@ glab version
 ./install-glab.sh --help
 ```
 
-## 🔍 Troubleshooting
+The script automatically checks currently installed version, missing dependencies, and proper functionality after update.
+
+## Uninstallation
+
+To completely remove glab from your system:
+
+```bash
+# Uninstall glab
+./install-glab.sh --uninstall
+```
+
+The uninstallation process will:
+
+1. Remove the glab package from your system
+2. Optionally delete configuration files (`~/.config/glab-cli/`)
+
+> **Note:** You will be prompted whether to keep or delete your configuration files during uninstallation.
+
+## Troubleshooting
 
 ### Issue: "none of the git remotes configured"
 
@@ -153,17 +153,17 @@ If you encounter issues, verify that all dependencies are installed:
 
 ```bash
 # Check for essential tools
-command -v git && echo "✅ git installed" || echo "❌ git missing"
-command -v ssh && echo "✅ ssh installed" || echo "❌ ssh missing"
-command -v jq && echo "✅ jq installed" || echo "❌ jq missing"
-command -v curl && echo "✅ curl installed" || echo "❌ curl missing"
-command -v gpg && echo "✅ gpg installed" || echo "❌ gpg missing"
+command -v wget && echo "[OK] wget installed" || echo "[MISSING] wget missing"
+command -v git && echo "[OK] git installed" || echo "[MISSING] git missing"
+command -v ssh && echo "[OK] ssh installed" || echo "[MISSING] ssh missing"
+command -v jq && echo "[OK] jq installed" || echo "[MISSING] jq missing"
+command -v gpg && echo "[OK] gpg installed" || echo "[MISSING] gpg missing"
 
 # Re-run the script to install missing dependencies
 ./install-glab.sh --help  # Shows help and dependency list
 ```
 
-## ⚠️ Important Notes
+## Important Notes
 
 - **Automatic Installation**: The script automatically installs all necessary dependencies
 - **Personal Tokens**: Keep your tokens secure and never commit them
@@ -173,13 +173,13 @@ command -v gpg && echo "✅ gpg installed" || echo "❌ gpg missing"
 - **Backup**: Always backup your configuration before making changes
 - **Post-installation Verification**: The script automatically tests glab functionality
 
-## 📖 Additional Resources
+## Additional Resources
 
 - [Official glab Documentation](https://gitlab.com/gitlab-org/cli)
 - [GitLab Personal Access Tokens](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
 - [GitLab API Documentation](https://docs.gitlab.com/ee/api/)
 
-## 🤝 Contributing
+## Contributing
 
 If you encounter issues specific to your environment or have improvements to suggest for the script, feel free to contribute!
 
