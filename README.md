@@ -1,320 +1,186 @@
-# GitLab CLI (glab) - Installation et Configuration
+# GitLab CLI (glab) - Automated Installer
 
-Ce dépôt contient un script d'installation automatisé pour GitLab CLI (glab) ainsi que la documentation pour configurer glab avec des instances GitLab personnalisées.
+This repository contains an automated installation script for GitLab CLI (glab) with dependency management and post-installation verification.
 
-## 📋 Table des matières
+## 📋 Table of Contents
 
 - [Installation](#-installation)
-- [Configuration pour GitLab personnalisé](#-configuration-pour-gitlab-personnalisé)
-- [Utilisation](#-utilisation)
-- [Dépannage](#-dépannage)
-- [Mise à jour](#-mise-à-jour)
+- [Usage](#-usage)
+- [Updates](#-updates)
+- [Troubleshooting](#-troubleshooting)
 
 ## 🚀 Installation
 
-### Installation automatique avec le script
+### Automated Installation with Script
 
 ```bash
-# Rendre le script exécutable
+# Make the script executable
 chmod +x install-glab.sh
 
-# Installer la dernière version
+# Install the latest version
 ./install-glab.sh
 
-# Installer une version spécifique
+# Install a specific version
 ./install-glab.sh 1.61.0
 ```
 
-### Fonctionnalités du script
+### Script Features
 
-- ✅ **Auto-détection** de la dernière version disponible
-- ✅ **Vérification** de la version actuellement installée
-- ✅ **Installation automatique** des dépendances manquantes
-- ✅ **Installation propre** avec nettoyage automatique des fichiers temporaires
-- ✅ **Analyse JSON robuste** avec jq pour l'API GitLab
-- ✅ **Vérification post-installation** du bon fonctionnement
-- ✅ **Gestion d'erreurs** robuste avec messages colorés
-- ✅ **Support multi-outil** (wget/curl pour téléchargements)
+- ✅ **Auto-detection** of the latest available version
+- ✅ **Version checking** of currently installed version
+- ✅ **Automatic installation** of missing dependencies
+- ✅ **Clean installation** with automatic cleanup of temporary files
+- ✅ **Robust JSON parsing** with jq for GitLab API
+- ✅ **Post-installation verification** of proper functionality
+- ✅ **Robust error handling** with colored messages
+- ✅ **Multi-tool support** (wget/curl for downloads)
 
-### Prérequis
+### Prerequisites
 
-Le script gère automatiquement l'installation des dépendances suivantes :
+The script automatically manages the installation of the following dependencies:
 
-#### Dépendances principales
+#### Core Dependencies
 
-- `wget` ou `curl` - Pour télécharger les packages
-- `dpkg` - Pour installer les packages .deb
-- `jq` - Pour analyser les réponses JSON de l'API GitLab
+- `wget` or `curl` - For downloading packages
+- `dpkg` - For installing .deb packages
+- `jq` - For parsing JSON responses from GitLab API
 
-#### Dépendances pour le fonctionnement optimal de glab
+#### Dependencies for Optimal glab Functionality
 
-- `git` - Nécessaire pour toutes les fonctionnalités Git de glab
-- `ssh` - Pour l'authentification SSH avec GitLab
-- `gpg` - Pour la vérification des signatures (recommandé pour la sécurité)
+- `git` - Required for all Git functionality in glab
+- `ssh` - For SSH authentication with GitLab
+- `gpg` - For signature verification (recommended for security)
 
-> 💡 **Note :** Si certaines dépendances sont manquantes, le script les installera automatiquement via `apt-get`. Privilèges administrateur requis.
+> 💡 **Note:** If any dependencies are missing, the script will automatically install them via `apt-get`. Administrator privileges required.
 
-### Première utilisation
+### First Use
 
-Après l'installation, commencez par vous authentifier :
+After installation, start by authenticating:
 
 ```bash
-# Authentification avec GitLab.com
+# Authentication with GitLab.com
 glab auth login
 
-# Ou avec une instance GitLab personnalisée
+# Or with a custom GitLab instance
 glab auth login --hostname gitlab.example.com
 ```
 
-Le script vérifie automatiquement que glab fonctionne correctement après l'installation.
+The script automatically verifies that glab works correctly after installation.
 
-## 🔧 Configuration pour GitLab personnalisé
+## � Usage
 
-### Cas d'usage : Domaines séparés pour SSH et API
+For detailed usage instructions and command reference, please refer to the [official glab documentation](https://gitlab.com/gitlab-org/cli).
 
-Si votre instance GitLab utilise des domaines différents pour SSH et l'API web (comme dans un environnement d'entreprise), suivez cette configuration.
+## 🔄 Updates
 
-#### Exemple de configuration
-
-**Domaines :**
-
-- Interface web/API : `https://gitlab.example.com`
-- SSH : `git@git.example.com:443`
-
-### Étape 1 : Authentification initiale
+### Automatic Update
 
 ```bash
-# S'authentifier avec le domaine de l'API web
-glab auth login --hostname gitlab.example.com
+# Update to the latest version
+./install-glab.sh
+
+# The script automatically checks:
+# - Currently installed version
+# - Missing dependencies
+# - Proper functionality after update
 ```
 
-Répondez aux questions comme suit :
-
-- **Comment vous connecter ?** → `Token`
-- **Domaines pour registry ?** → `gitlab.example.com,gitlab.example.com:443,registry.gitlab.example.com`
-- **Token personnel** → Générez un token avec les scopes `api` et `write_repository`
-- **Protocole Git par défaut** → `SSH` ou `HTTPS` selon votre préférence
-- **Protocole API** → `HTTPS`
-
-### Étape 2 : Configuration du mapping de domaines
-
-Si l'authentification échoue à cause de domaines différents, configurez manuellement :
-
-1. **Sauvegarder la configuration actuelle :**
+### Manual Update
 
 ```bash
-cp ~/.config/glab-cli/config.yml ~/.config/glab-cli/config.yml.backup
+# Check current version
+glab version
+
+# Install a specific version
+./install-glab.sh 1.62.0
+
+# Display help to see all options
+./install-glab.sh --help
 ```
 
-2. **Éditer la configuration :**
+## 🔍 Troubleshooting
 
-```bash
-vi ~/.config/glab-cli/config.yml
-```
+### Issue: "none of the git remotes configured"
 
-3. **Ajouter/modifier la section pour le domaine SSH :**
-
-```yaml
-hosts:
-  gitlab.example.com:
-    token: YOUR_TOKEN_HERE
-    api_host: gitlab.example.com
-    git_protocol: ssh
-    api_protocol: https
-    user: your.username
-    container_registry_domains: gitlab.example.com,gitlab.example.com:443,registry.gitlab.example.com
-
-  git.example.com:
-    token: YOUR_TOKEN_HERE
-    api_host: gitlab.example.com
-    git_protocol: ssh
-    api_protocol: https
-    user: your.username
-    container_registry_domains: gitlab.example.com,gitlab.example.com:443,registry.gitlab.example.com
-```
-
-### Étape 3 : Vérification
-
-```bash
-cd /path/to/your/project
-glab mr list
-```
-
-## 📚 Utilisation
-
-### Commandes principales
-
-```bash
-# Lister les merge requests
-glab mr list
-
-# Voir les détails d'une MR
-glab mr view 123
-
-# Créer une nouvelle MR
-glab mr create
-
-# Lister les issues
-glab issue list
-
-# Voir les détails d'une issue
-glab issue view 456
-
-# Cloner un projet
-glab repo clone group/project
-
-# Voir l'aide complète
-glab --help
-```
-
-### Utilisation avec les IA et scripts automatisés
-
-Lors de l'utilisation de glab avec des IA (comme GitHub Copilot, ChatGPT, etc.) ou dans des scripts automatisés, ajoutez `| cat` après les commandes pour éviter le mode interactif :
-
-```bash
-# Au lieu de :
-glab mr list
-glab mr view 123
-glab issue list
-
-# Utilisez :
-glab mr list | cat
-glab mr view 123 | cat
-glab issue list | cat
-```
-
-> 💡 **Pourquoi `| cat` ?** Cela force la sortie en mode non-interactif, évitant les problèmes de pagination et permettant aux IA de traiter correctement la sortie complète.
-
-### Alias utiles
-
-Ajoutez ces alias à votre `.bashrc` ou `.zshrc` :
-
-```bash
-alias glmr="glab mr"
-alias glmrl="glab mr list"
-alias glmrc="glab mr create"
-alias glis="glab issue list"
-alias gliv="glab issue view"
-
-# Versions non-interactives pour usage avec IA/scripts
-alias glmrl-ai="glab mr list | cat"
-alias glmrv-ai="glab mr view"
-alias glis-ai="glab issue list | cat"
-alias gliv-ai="glab issue view"
-```
-
-## 🔍 Dépannage
-
-### Problème : "none of the git remotes configured"
-
-**Erreur :**
+**Error:**
 
 ```
 ERROR: none of the git remotes configured for this repository point to a known GitLab host.
 ```
 
-**Solution :**
+**Solution:**
 
-1. Vérifiez vos remotes : `git remote -v`
-2. Assurez-vous que le domaine du remote correspond à votre configuration glab
-3. Suivez la section [Configuration pour GitLab personnalisé](#-configuration-pour-gitlab-personnalisé)
+1. Check your remotes: `git remote -v`
+2. Ensure the remote domain matches your glab configuration
+3. Use `glab auth login --hostname your-gitlab-domain.com` to configure the correct host
 
-### Problème : "tls: first record does not look like a TLS handshake"
+### Issue: "tls: first record does not look like a TLS handshake"
 
-**Cause :** Le port configuré ne répond pas en HTTPS/TLS.
+**Cause:** The configured port does not respond with HTTPS/TLS.
 
-**Solution :**
+**Solution:**
 
-1. Vérifiez le bon domaine pour l'API web
-2. Testez la connectivité : `curl -I https://your-gitlab-domain.com`
-3. Utilisez le bon domaine dans `glab auth login`
+1. Verify the correct domain for the web API
+2. Test connectivity: `curl -I https://your-gitlab-domain.com`
+3. Use the correct domain in `glab auth login`
 
-### Problème : "i/o timeout"
+### Issue: "i/o timeout"
 
-**Cause :** Problème de connectivité réseau ou port fermé.
+**Cause:** Network connectivity issue or closed port.
 
-**Solution :**
+**Solution:**
 
-1. Vérifiez votre connexion réseau
-2. Testez la connectivité avec curl
-3. Vérifiez les pare-feu/proxy d'entreprise
+1. Check your network connection
+2. Test connectivity with curl
+3. Check corporate firewalls/proxies
 
-### Vérification de la configuration
+### Configuration Verification
 
 ```bash
-# Voir la configuration actuelle
+# View current configuration
 glab config get
 
-# Voir les hôtes configurés
+# View configured hosts
 cat ~/.config/glab-cli/config.yml
 
-# Tester la connexion
+# Test connection
 glab api projects
 ```
 
-### Vérification des dépendances
+### Dependency Verification
 
-Si vous rencontrez des problèmes, vérifiez que toutes les dépendances sont installées :
-
-```bash
-# Vérifier la présence des outils essentiels
-command -v git && echo "✅ git installé" || echo "❌ git manquant"
-command -v ssh && echo "✅ ssh installé" || echo "❌ ssh manquant"
-command -v jq && echo "✅ jq installé" || echo "❌ jq manquant"
-command -v curl && echo "✅ curl installé" || echo "❌ curl manquant"
-command -v gpg && echo "✅ gpg installé" || echo "❌ gpg manquant"
-
-# Re-exécuter le script pour installer les dépendances manquantes
-./install-glab.sh --help  # Affiche l'aide et la liste des dépendances
-```
-
-## 🔄 Mise à jour
-
-### Mise à jour automatique
+If you encounter issues, verify that all dependencies are installed:
 
 ```bash
-# Mettre à jour vers la dernière version
-./install-glab.sh
+# Check for essential tools
+command -v git && echo "✅ git installed" || echo "❌ git missing"
+command -v ssh && echo "✅ ssh installed" || echo "❌ ssh missing"
+command -v jq && echo "✅ jq installed" || echo "❌ jq missing"
+command -v curl && echo "✅ curl installed" || echo "❌ curl missing"
+command -v gpg && echo "✅ gpg installed" || echo "❌ gpg missing"
 
-# Le script vérifie automatiquement :
-# - La version actuelle installée
-# - Les dépendances manquantes
-# - Le bon fonctionnement après mise à jour
+# Re-run the script to install missing dependencies
+./install-glab.sh --help  # Shows help and dependency list
 ```
 
-### Mise à jour manuelle
+## ⚠️ Important Notes
 
-```bash
-# Vérifier la version actuelle
-glab version
+- **Automatic Installation**: The script automatically installs all necessary dependencies
+- **Personal Tokens**: Keep your tokens secure and never commit them
+- **Permissions**: Ensure your tokens have `api` and `write_repository` scopes
+- **Administrator Privileges**: Required for automatic dependency installation
+- **Enterprise Environments**: Configurations may vary based on your infrastructure
+- **Backup**: Always backup your configuration before making changes
+- **Post-installation Verification**: The script automatically tests glab functionality
 
-# Installer une version spécifique
-./install-glab.sh 1.62.0
+## 📖 Additional Resources
 
-# Afficher l'aide pour voir toutes les options
-./install-glab.sh --help
-```
-
-## ⚠️ Notes importantes
-
-- **Installation automatique** : Le script installe automatiquement toutes les dépendances nécessaires
-- **Tokens personnels** : Gardez vos tokens en sécurité et ne les committez jamais
-- **Permissions** : Assurez-vous que vos tokens ont les scopes `api` et `write_repository`
-- **Privilèges administrateur** : Requis pour l'installation automatique des dépendances
-- **Environnements d'entreprise** : Les configurations peuvent varier selon votre infrastructure
-- **Sauvegarde** : Sauvegardez toujours votre configuration avant modification
-- **Vérification post-installation** : Le script teste automatiquement le bon fonctionnement de glab
-
-## 📖 Ressources supplémentaires
-
-- [Documentation officielle glab](https://gitlab.com/gitlab-org/cli)
+- [Official glab Documentation](https://gitlab.com/gitlab-org/cli)
 - [GitLab Personal Access Tokens](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
 - [GitLab API Documentation](https://docs.gitlab.com/ee/api/)
 
-## 🤝 Contribution
+## 🤝 Contributing
 
-Si vous rencontrez des problèmes spécifiques à votre environnement ou avez des améliorations à proposer pour le script, n'hésitez pas à contribuer !
+If you encounter issues specific to your environment or have improvements to suggest for the script, feel free to contribute!
 
 ---
-
-_Dernière mise à jour : Août 2025 - Script amélioré avec installation automatique des dépendances_
